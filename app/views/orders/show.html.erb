@@ -1,0 +1,122 @@
+<div class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+      <li class="breadcrumb-item"><%= link_to "Orders", orders_path %></li>
+      <li class="breadcrumb-item active">Order #<%= @order.id %></li>
+    </ol>
+  </nav>
+  
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Order #<%= @order.id %></h5>
+            <span class="badge bg-<%= @order.pending? ? 'warning' : @order.processing? ? 'info' : @order.shipped? ? 'primary' : @order.delivered? ? 'success' : 'secondary' %> text-<%= @order.delivered? ? 'dark' : 'light' %>">
+              <%= @order.status.capitalize %>
+            </span>
+          </div>
+          <small class="text-muted">Placed on <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %></small>
+        </div>
+        
+        <div class="card-body">
+          <h6 class="mb-3">Items Ordered</h6>
+          
+          <% @order.order_items.each do |item| %>
+            <div class="row align-items-center border-bottom py-3">
+              <div class="col-md-2">
+                <% if item.product.image_url.present? %>
+                  <%= image_tag item.product.image_url, class: "img-fluid rounded", style: "height: 80px; object-fit: cover;" %>
+                <% else %>
+                  <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 80px;">
+                    <i class="fas fa-tshirt fa-2x text-muted"></i>
+                  </div>
+                <% end %>
+              </div>
+              
+              <div class="col-md-5">
+                <h6 class="mb-1"><%= item.product.name %></h6>
+                <small class="text-muted"><%= item.product.category.name %></small><br>
+                <% if item.product.size.present? %>
+                  <small class="text-muted">Size: <%= item.product.size %></small><br>
+                <% end %>
+                <% if item.product.color.present? %>
+                  <small class="text-muted">Color: <%= item.product.color %></small>
+                <% end %>
+              </div>
+              
+              <div class="col-md-2 text-center">
+                <span class="fw-bold">$<%= item.price %></span>
+              </div>
+              
+              <div class="col-md-1 text-center">
+                <span class="text-muted">Qty: <%= item.quantity %></span>
+              </div>
+              
+              <div class="col-md-2 text-center">
+                <span class="fw-bold text-primary">$<%= item.total_price %></span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">Order Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span>$<%= @order.total %></span>
+          </div>
+          
+          <div class="d-flex justify-content-between mb-2">
+            <span>Shipping:</span>
+            <span class="text-muted">Free</span>
+          </div>
+          
+          <hr>
+          
+          <div class="d-flex justify-content-between mb-3">
+            <span class="fw-bold">Total:</span>
+            <span class="fw-bold text-primary h5">$<%= @order.total %></span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6 class="mb-0">Shipping Address</h6>
+        </div>
+        <div class="card-body">
+          <address><%= simple_format(@order.shipping_address) %></address>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6 class="mb-0">Order Status</h6>
+        </div>
+        <div class="card-body">
+          <div class="progress mb-3" style="height: 25px;">
+            <div class="progress-bar <%= @order.pending? ? 'bg-warning' : 'bg-success' %>" style="width: 25%">Pending</div>
+            <div class="progress-bar <%= @order.processing? || @order.shipped? || @order.delivered? ? 'bg-success' : 'bg-light' %>" style="width: 25%">Processing</div>
+            <div class="progress-bar <%= @order.shipped? || @order.delivered? ? 'bg-success' : 'bg-light' %>" style="width: 25%">Shipped</div>
+            <div class="progress-bar <%= @order.delivered? ? 'bg-success' : 'bg-light' %>" style="width: 25%">Delivered</div>
+          </div>
+          
+          <p class="mb-0">Current Status: <strong><%= @order.status.capitalize %></strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="mt-4">
+    <%= link_to "← Back to Orders", orders_path, class: "btn btn-outline-primary" %>
+    <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
+  </div>
+</div>
